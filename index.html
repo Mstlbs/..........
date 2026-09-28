@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Do you love me?</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    overflow: hidden;
+  }
+  .card {
+    text-align: center;
+    background: rgba(255,255,255,0.85);
+    padding: 40px 32px;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    max-width: 90vw;
+  }
+  h1 { margin: 0 0 8px; color: #c2185b; font-size: 2rem; }
+  .emoji { font-size: 4rem; }
+  .buttons { margin-top: 28px; display: flex; gap: 20px; justify-content: center; align-items: center; min-height: 60px; }
+  button {
+    border: none;
+    border-radius: 14px;
+    font-size: 1.2rem;
+    padding: 14px 32px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  #yes { background: #e91e63; color: #fff; transition: transform .15s; }
+  #yes:hover { transform: scale(1.1); }
+  #no { background: #90a4ae; color: #fff; position: relative; }
+  .hidden { display: none; }
+  .heart {
+    position: fixed;
+    top: -40px;
+    font-size: 2rem;
+    animation: fall linear forwards;
+    pointer-events: none;
+  }
+  @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+</style>
+</head>
+<body>
+  <div class="card" id="question">
+    <div class="emoji">🥺</div>
+    <h1>Do you love me?</h1>
+    <div class="buttons">
+      <button id="yes">Yes 💖</button>
+      <button id="no">No</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="answer">
+    <div class="emoji">🥰</div>
+    <h1>I knew it! I love you too 💕</h1>
+  </div>
+
+<script>
+  const yes = document.getElementById('yes');
+  const no = document.getElementById('no');
+  let yesScale = 1;
+
+  function dodge() {
+    const pad = 10;
+    const w = no.offsetWidth, h = no.offsetHeight;
+    const maxX = window.innerWidth - w - pad;
+    const maxY = window.innerHeight - h - pad;
+    no.style.position = 'fixed';
+    no.style.left = Math.max(pad, Math.random() * maxX) + 'px';
+    no.style.top = Math.max(pad, Math.random() * maxY) + 'px';
+    // Yes gets bigger every time she tries
+    yesScale = Math.min(yesScale + 0.12, 2.5);
+    yes.style.transform = 'scale(' + yesScale + ')';
+  }
+
+  // Runs away when the mouse gets near, or on touch
+  document.addEventListener('mousemove', (e) => {
+    const r = no.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    if (Math.hypot(e.clientX - cx, e.clientY - cy) < 110) dodge();
+  });
+  no.addEventListener('mouseenter', dodge);
+  no.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }, { passive: false });
+  no.addEventListener('click', (e) => { e.preventDefault(); dodge(); });
+
+  yes.addEventListener('click', () => {
+    document.getElementById('question').classList.add('hidden');
+    no.classList.add('hidden');
+    document.getElementById('answer').classList.remove('hidden');
+    for (let i = 0; i < 40; i++) {
+      const h = document.createElement('div');
+      h.className = 'heart';
+      h.textContent = ['💖','💕','❤️','💗'][Math.floor(Math.random() * 4)];
+      h.style.left = Math.random() * 100 + 'vw';
+      h.style.animationDuration = (2 + Math.random() * 3) + 's';
+      h.style.animationDelay = Math.random() * 1.5 + 's';
+      document.body.appendChild(h);
+    }
+  });
+</script>
+</body>
+</html>
